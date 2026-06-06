@@ -1,0 +1,28 @@
+version: '3.8' # Xác định phiên bản định dạng của Docker Compose.
+
+services: # Khai báo các dịch vụ (container) sẽ chạy.
+  db_spending: # Định danh dịch vụ cho cơ sở dữ liệu chi tiêu.
+    image: postgres:15 # Tải "Bản thiết kế" PostgreSQL phiên bản 15 từ Docker Hub [5, 6].
+    container_name: postgres_app_container # Tên thực thể đang chạy của Database.
+    
+    environment: # Thiết lập các biến môi trường cấu hình hệ thống [4].
+      - POSTGRES_USER=admin      # Tên tài khoản quản trị để đăng nhập.
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=spending_db  # Tên cơ sở dữ liệu sẽ được tạo tự động.
+    
+    ports: # Ánh xạ cổng (Port Mapping) [4].
+      - "5433:5432" # Máy thật của em truy cập qua cổng 5432 để "nhìn" vào cổng 5432 của Container.
+    
+    volumes: # Cơ chế lưu trữ bền vững (Data Persistence) [4].
+      - pgdata:/var/lib/postgresql/data # Ánh xạ dữ liệu ra ổ cứng thật để không mất khi tắt máy.
+
+  api_server:
+    build: ./backend_api
+    container_name: dart_api_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db_spending
+
+volumes: # Khai báo vùng nhớ độc lập quản lý bởi Docker.
+  pgdata:
