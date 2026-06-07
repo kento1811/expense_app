@@ -117,3 +117,20 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+
+# Chặn các file chứa mật khẩu, token cấu hình online/local
+.env
+.env.local
+.env.*.local
+
+# Chặn thư mục lưu trữ dữ liệu thô của Database (nếu bạn ánh xạ ra thư mục ngoài)
+/pgdata/
+/postgres_data/
+
+# Chặn các file cấu hình và chứng chỉ bảo mật khi chạy Docker
+.docker/
+*.pem
+*.key
+
+# Chặn file log phát sinh khi chạy API Server
+/backend_api/*.log
