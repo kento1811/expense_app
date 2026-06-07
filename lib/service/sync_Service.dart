@@ -19,7 +19,8 @@ class SyncService {
 
     for (var map in unsyncedMaps) {
       final expense = Expense.fromMap(map); // Giả sử em có hàm fromMap
-
+      
+      print('--- BẮT ĐẦU GỬI DATA LÊN RENDER: ${Uri.parse('$baseUrl/expenses')} ---');
       try {
         // 3. Gửi yêu cầu POST lên API
         final response = await http.post(

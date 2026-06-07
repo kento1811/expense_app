@@ -46,6 +46,30 @@ void main() async {
     return Response.ok(jsonEncode(data), headers: {'Content-Type': 'application/json'});
   });
 
+  // 1. Định nghĩa Endpoint POST: Tiếp nhận và lưu chi tiêu từ App Flutter gửi lên
+  router.post('/expenses', (Request request) async {
+    // Đọc chuỗi JSON gửi từ App
+    final payload = await request.readAsString();
+    final data = jsonDecode(payload);
+
+    // Lấy các trường dữ liệu ra
+    final String id = data['id'];
+    final String title = data['title'];
+    final double amount = (data['amount'] as num).toDouble();
+    final String date = data['date'];
+
+    // Lệnh SQL để chèn dữ liệu trực tiếp vào Postgres trên Supabase
+    await conn.execute(
+      r'INSERT INTO expenses (id, title, amount, date) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING',
+      parameters: [id, title, amount, DateTime.parse(date)],
+    );
+
+    return Response.ok(
+      jsonEncode({'message': 'Đã lưu vào Postgres thành công'}), 
+      headers: {'Content-Type': 'application/json'}
+    );
+  });
+
   // 3. Khởi chạy Server nội bộ của container tại cổng 8080
   final handler = Pipeline().addMiddleware(logRequests()).addHandler(router.call);
   final server = await io.serve(handler, '0.0.0.0', 8080);

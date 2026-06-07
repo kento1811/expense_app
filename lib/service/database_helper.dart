@@ -27,18 +27,22 @@ class DatabaseHelper {
   Future _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE expenses (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id TEXT PRIMARY KEY,        -- SỬA: Đổi sang TEXT để đồng bộ chuẩn với UUID/String trên Postgres
         title TEXT NOT NULL,
         amount REAL NOT NULL,
         date TEXT NOT NULL,
-        isSynced INTEGER
+        is_synced INTEGER DEFAULT 0 -- SỬA: Đổi từ isSynced thành is_synced cho đồng nhất
       )
     ''');
   }
 
   Future<int> insertExpense(Expense expense) async {
     final db = await instance.database;
-    return await db.insert('expenses', expense.toMap(),conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      'expenses', 
+      expense.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   } 
 
   Future<List<Expense>> getAllExpenses() async {
