@@ -33,11 +33,14 @@ void main() async {
     final results = await conn.execute('SELECT * FROM expenses');
     
     // Chuyển đổi dữ liệu từ DB sang định dạng JSON
-    final data = results.map((row) => {
-      'id': row[0],    // <-- SỬA TẠI ĐÂY: row[0] tương ứng với cột ID trong bảng
-      'title': row[1],
-      'amount': row[2],
-      'date': (row[3] as DateTime).toIso8601String(),
+   final data = results.map((row) {
+      final rowMap = row.toColumnMap(); // Chuyển dòng thành Map dựa trên tên cột
+      return {
+        'id': rowMap['id'],    
+        'title': rowMap['title'],
+        'amount': rowMap['amount'],
+        'date': (rowMap['date'] as DateTime).toIso8601String(),
+      };
     }).toList();
 
     return Response.ok(jsonEncode(data), headers: {'Content-Type': 'application/json'});
