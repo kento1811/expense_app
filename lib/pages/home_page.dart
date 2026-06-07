@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/expense.dart';
 import '../service/database_helper.dart';
+import '../service/sync_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,6 +32,15 @@ class _HomePageState extends State<HomePage>{
     _titleController.clear();
     _amountController.clear();
     setState(() {});
+
+    final syncService = SyncService();
+    syncService.syncExpenses().then((_) {
+      // Sau khi đồng bộ xong và cờ is_synced dưới SQLite đã đổi thành 1, 
+      // ta gọi setState một lần nữa để làm mới danh sách (nếu giao diện cần hiển thị trạng thái đồng bộ)
+      if (mounted) {
+        setState(() {});
+      }
+    });
   } 
 
   @override
